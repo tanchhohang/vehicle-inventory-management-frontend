@@ -1,4 +1,4 @@
-import { Route, Routes } from 'react-router-dom'
+import { Route, Routes, useLocation} from 'react-router-dom'
 import Appointments from './pages/Appointments'
 import Reviews from './pages/Reviews'
 import PurchaseInvoices from './pages/PurchaseInvoices'
@@ -8,8 +8,16 @@ import Login from "./pages/Authentication/customer-login";
 import Parts from './pages/Parts'
 import Sales from './pages/Sales'
 import VendorPage from './pages/Vendor/VendorPage'
+import UserManagement from './pages/UserManagement'
+import Navbar from './common-components/NavBar'
+
 function App() {
+  const location = useLocation();
+  const hideNav = ['/', '/login', '/register'].includes(location.pathname);
+
   return (
+    <>
+      {!hideNav && <Navbar />}
     <Routes>
       <Route path="/" element={<Login />} />
       <Route path="/login" element={<Login />} />
@@ -21,7 +29,9 @@ function App() {
       <Route path="/parts" element={<Parts />} />
       <Route path="/sales" element={<Sales />} />
       <Route path="/vendors" element={<VendorPage />} />
+      <Route path="/user-management" element={<UserManagement />} />
     </Routes>
+    </>
   )
 }
 

@@ -5,7 +5,8 @@ import PurchaseInvoices from './pages/PurchaseInvoices'
 import CustomerReports from './pages/CustomerReports'
 import CustomerRegister from "./pages/Authentication/customer-register";
 import Login from "./pages/Authentication/customer-login";
-
+import Parts from './pages/Parts'
+import Sales from './pages/Sales'
 function App() {
   return (
     <Routes>
@@ -16,6 +17,8 @@ function App() {
       <Route path="/reviews" element={<Reviews />} />
       <Route path="/purchase-invoices" element={<PurchaseInvoices />} />
       <Route path="/customer-reports" element={<CustomerReports />} />
+        <Route path="/parts" element={<Parts />} />
+        <Route path="/sales" element={<Sales />} />
     </Routes>
   )
 }

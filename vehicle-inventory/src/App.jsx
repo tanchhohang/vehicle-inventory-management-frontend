@@ -1,10 +1,10 @@
 import { Route, Routes } from 'react-router-dom'
-import Login from './pages/Login'
-import CustomerRegister from './pages/CustomerRegister'
 import Appointments from './pages/Appointments'
 import Reviews from './pages/Reviews'
 import PurchaseInvoices from './pages/PurchaseInvoices'
 import CustomerReports from './pages/CustomerReports'
+import CustomerRegister from "./pages/Authentication/customer-register";
+import Login from "./pages/Authentication/customer-login";
 
 function App() {
   return (
@@ -20,4 +20,4 @@ function App() {
   )
 }
 
-export default App
+export default App;

@@ -1,121 +1,56 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from './assets/vite.svg'
-import heroImg from './assets/hero.png'
-import './App.css'
+import { Link, Navigate, Route, Routes } from 'react-router-dom'
+import Appointments from './pages/Appointments'
+import Reviews from './pages/Reviews'
+import PurchaseInvoices from './pages/PurchaseInvoices'
+import CustomerReports from './pages/CustomerReports'
 
 function App() {
-  const [count, setCount] = useState(0)
+  const styles = {
+    app: {
+      fontFamily: 'Arial, sans-serif',
+      minHeight: '100vh',
+      backgroundColor: '#f9f9f9',
+    },
+    navbar: {
+      display: 'flex',
+      gap: 12,
+      padding: 14,
+      borderBottom: '1px solid #ddd',
+      backgroundColor: '#fff',
+      flexWrap: 'wrap',
+    },
+    link: {
+      textDecoration: 'none',
+      color: '#1f3b66',
+      border: '1px solid #b8c7df',
+      borderRadius: 6,
+      padding: '8px 12px',
+      backgroundColor: '#eef4ff',
+    },
+    content: {
+      padding: 16,
+    },
+  }
 
   return (
-    <>
-      <section id="center">
-        <div className="hero">
-          <img src={heroImg} className="base" width="170" height="179" alt="" />
-          <img src={reactLogo} className="framework" alt="React logo" />
-          <img src={viteLogo} className="vite" alt="Vite logo" />
-        </div>
-        <div>
-          <h1>Get started</h1>
-          <p>
-            Edit <code>src/App.jsx</code> and save to test <code>HMR</code>
-          </p>
-        </div>
-        <button
-          type="button"
-          className="counter"
-          onClick={() => setCount((count) => count + 1)}
-        >
-          Count is {count}
-        </button>
-      </section>
+    <div style={styles.app}>
+      <nav style={styles.navbar}>
+        <Link to="/appointments" style={styles.link}>Appointments</Link>
+        <Link to="/reviews" style={styles.link}>Reviews</Link>
+        <Link to="/purchase-invoices" style={styles.link}>Purchase Invoices</Link>
+        <Link to="/customer-reports" style={styles.link}>Customer Reports</Link>
+      </nav>
 
-      <div className="ticks"></div>
-
-      <section id="next-steps">
-        <div id="docs">
-          <svg className="icon" role="presentation" aria-hidden="true">
-            <use href="/icons.svg#documentation-icon"></use>
-          </svg>
-          <h2>Documentation</h2>
-          <p>Your questions, answered</p>
-          <ul>
-            <li>
-              <a href="https://vite.dev/" target="_blank">
-                <img className="logo" src={viteLogo} alt="" />
-                Explore Vite
-              </a>
-            </li>
-            <li>
-              <a href="https://react.dev/" target="_blank">
-                <img className="button-icon" src={reactLogo} alt="" />
-                Learn more
-              </a>
-            </li>
-          </ul>
-        </div>
-        <div id="social">
-          <svg className="icon" role="presentation" aria-hidden="true">
-            <use href="/icons.svg#social-icon"></use>
-          </svg>
-          <h2>Connect with us</h2>
-          <p>Join the Vite community</p>
-          <ul>
-            <li>
-              <a href="https://github.com/vitejs/vite" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#github-icon"></use>
-                </svg>
-                GitHub
-              </a>
-            </li>
-            <li>
-              <a href="https://chat.vite.dev/" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#discord-icon"></use>
-                </svg>
-                Discord
-              </a>
-            </li>
-            <li>
-              <a href="https://x.com/vite_js" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#x-icon"></use>
-                </svg>
-                X.com
-              </a>
-            </li>
-            <li>
-              <a href="https://bsky.app/profile/vite.dev" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#bluesky-icon"></use>
-                </svg>
-                Bluesky
-              </a>
-            </li>
-          </ul>
-        </div>
-      </section>
-
-      <div className="ticks"></div>
-      <section id="spacer"></section>
-    </>
+      <main style={styles.content}>
+        <Routes>
+          <Route path="/" element={<Navigate to="/appointments" replace />} />
+          <Route path="/appointments" element={<Appointments />} />
+          <Route path="/reviews" element={<Reviews />} />
+          <Route path="/purchase-invoices" element={<PurchaseInvoices />} />
+          <Route path="/customer-reports" element={<CustomerReports />} />
+        </Routes>
+      </main>
+    </div>
   )
 }
 

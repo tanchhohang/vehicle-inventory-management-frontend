@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { User, UserCircle, Mail, Lock, Eye, EyeOff } from "lucide-react";
 import "./index.css";
-import { Link } from "react-router-dom";
+import { Link, useNavigate} from "react-router-dom";
 
 const INITIAL_FORM = {
   firstName: "",
@@ -14,13 +14,26 @@ const INITIAL_FORM = {
 
 // API Integration Point
 async function registerCustomer(payload) {
-  // TODO: replace with real endpoint
+  const res = await fetch("http://localhost:5047/api/auth/register", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      firstName: payload.firstName,
+      lastName: payload.lastName,
+      username: payload.username,
+      email: payload.email,
+      password: payload.password,
+      role: "Customer",
+    }),
+  });
 
-  await new Promise((r) => setTimeout(r, 1000));
-  return { success: true };
+  const data = await res.json();
+  if (!res.ok) throw new Error(data.message || "Registration failed.");
+  return data;
 }
 
 export default function CustomerRegister() {
+    const navigate = useNavigate();
   const [form, setForm] = useState(INITIAL_FORM);
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirm, setShowConfirm] = useState(false);
@@ -48,6 +61,7 @@ export default function CustomerRegister() {
     try {
       await registerCustomer(payload);
       setStatus("success");
+      navigate("/login");
     } catch (err) {
       setServerError(err.message || "Registration failed. Please try again.");
       setStatus("error");
@@ -156,6 +170,11 @@ export default function CustomerRegister() {
             </div>
           </Field>
         </div>
+
+        {/* Server error */}
+        {status === "error" && (
+        <div className="cr-error-banner">{serverError}</div>
+        )}
 
 
         {/* Actions */}

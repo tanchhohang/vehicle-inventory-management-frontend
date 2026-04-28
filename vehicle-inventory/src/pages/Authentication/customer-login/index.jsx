@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { UserCircle, Lock, Eye, EyeOff } from "lucide-react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate} from "react-router-dom";
 import "../customer-register/index.css";
 
 const INITIAL_FORM = {
@@ -9,17 +9,26 @@ const INITIAL_FORM = {
 };
 
 async function loginCustomer(payload) {
-  // TODO: replace with real endpoint
+  const res = await fetch("http://localhost:5047/api/auth/login", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      usernameOrEmail: payload.usernameOrEmail,
+      password: payload.password,
+    }),
+  });
 
-  await new Promise((r) => setTimeout(r, 1000));
-  return { success: true };
+  const data = await res.json();
+  if (!res.ok) throw new Error(data.message || "Login failed.");
+  return data;
 }
 
 export default function Login() {
-  const [form, setForm] = useState(INITIAL_FORM);
-  const [showPassword, setShowPassword] = useState(false);
-  const [status, setStatus] = useState(null); // null | "loading" | "error"
-  const [serverError, setServerError] = useState("");
+    const navigate = useNavigate();
+    const [form, setForm] = useState(INITIAL_FORM);
+    const [showPassword, setShowPassword] = useState(false);
+    const [status, setStatus] = useState(null); // null | "loading" | "error"
+    const [serverError, setServerError] = useState("");
 
   const update = (field) => (e) =>
     setForm((f) => ({ ...f, [field]: e.target.value }));
@@ -36,7 +45,7 @@ export default function Login() {
     try {
       await loginCustomer(payload);
       setStatus(null);
-      // TODO: redirect after login
+      navigate("/user-management"); // redirect after login
     } catch (err) {
       setServerError(err.message || "Invalid credentials. Please try again.");
       setStatus("error");

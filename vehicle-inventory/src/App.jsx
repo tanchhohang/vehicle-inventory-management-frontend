@@ -1,35 +1,28 @@
-// App.jsx
-// This is the main file of our React application.
-// I set up the routing here so that each page has its own URL.
-//
-// I installed a package called react-router-dom to handle navigation.
-// Command I used: npm install react-router-dom
-// I needed this because without it, React cant navigate between pages.
-// It works like a traffic controller - it looks at the URL and shows
-// the correct page component.
-//
-// For example:
-// /vendors  --> shows the Vendor Management page
-//
-// As our team adds more pages, we will add more Routes here.
-
-
-import { BrowserRouter, Routes, Route } from 'react-router-dom'
+import { Route, Routes } from 'react-router-dom'
+import Appointments from './pages/Appointments'
+import Reviews from './pages/Reviews'
+import PurchaseInvoices from './pages/PurchaseInvoices'
+import CustomerReports from './pages/CustomerReports'
+import CustomerRegister from "./pages/Authentication/customer-register";
+import Login from "./pages/Authentication/customer-login";
+import Parts from './pages/Parts'
+import Sales from './pages/Sales'
 import VendorPage from './pages/Vendor/VendorPage'
-import './App.css'
-
 function App() {
-    return (
-        // BrowserRouter wraps everything so routing works across the whole app
-        <BrowserRouter>
-            <Routes>
-                {/* When user goes to /vendors, show the VendorPage component */}
-                <Route path="/vendors" element={<VendorPage />} />
-
-                {/* Other team members will add their routes here */}
-            </Routes>
-        </BrowserRouter>
-    )
+  return (
+    <Routes>
+      <Route path="/" element={<Login />} />
+      <Route path="/login" element={<Login />} />
+      <Route path="/register" element={<CustomerRegister />} />
+      <Route path="/appointments" element={<Appointments />} />
+      <Route path="/reviews" element={<Reviews />} />
+      <Route path="/purchase-invoices" element={<PurchaseInvoices />} />
+      <Route path="/customer-reports" element={<CustomerReports />} />
+      <Route path="/parts" element={<Parts />} />
+      <Route path="/sales" element={<Sales />} />
+      <Route path="/vendors" element={<VendorPage />} />
+    </Routes>
+  )
 }
 
-export default App
+export default App;

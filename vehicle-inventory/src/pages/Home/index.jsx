@@ -1,0 +1,308 @@
+import { useState, useMemo } from "react";
+import {
+  Search,
+  ShoppingCart,
+  Package,
+  Tag,
+  ChevronDown,
+  ChevronUp,
+  AlertCircle,
+  LayoutGrid,
+  LayoutList,
+} from "lucide-react";
+import { MOCK_PARTS, CATEGORIES } from "./mockParts";
+import "./index.css";
+
+//  Helpers
+
+function fmtPrice(price) {
+  return new Intl.NumberFormat("en-US", {
+    style: "currency",
+    currency: "USD",
+    minimumFractionDigits: 2,
+  }).format(price);
+}
+
+function stockLabel(qty) {
+  if (qty === 0) return { text: "Out of Stock", cls: "ch-stock ch-stock--out" };
+  if (qty <= 10) return { text: `Low Stock (${qty})`, cls: "ch-stock ch-stock--low" };
+  return { text: "In Stock", cls: "ch-stock ch-stock--ok" };
+}
+
+const SORT_OPTIONS = [
+  { value: "name-asc",   label: "Name (A → Z)" },
+  { value: "name-desc",  label: "Name (Z → A)" },
+  { value: "price-asc",  label: "Price (Low → High)" },
+  { value: "price-desc", label: "Price (High → Low)" },
+  { value: "stock-desc", label: "Stock (High → Low)" },
+];
+
+
+export default function CustomerHome() {
+  const [search, setSearch]         = useState("");
+  const [category, setCategory]     = useState("All");
+  const [sort, setSort]             = useState("name-asc");
+  const [view, setView]             = useState("grid"); // "grid" | "list"
+  const [cartIds, setCartIds]       = useState(new Set());
+  const [expandedId, setExpandedId] = useState(null);
+
+  //  Filter & sort 
+  const filtered = useMemo(() => {
+    const q = search.trim().toLowerCase();
+    let list = MOCK_PARTS.filter((p) => {
+      const matchCat = category === "All" || p.category === category;
+      const matchQ =
+        !q ||
+        p.name.toLowerCase().includes(q) ||
+        p.description?.toLowerCase().includes(q) ||
+        p.category?.toLowerCase().includes(q);
+      return matchCat && matchQ;
+    });
+
+    list = [...list].sort((a, b) => {
+      switch (sort) {
+        case "name-asc":   return a.name.localeCompare(b.name);
+        case "name-desc":  return b.name.localeCompare(a.name);
+        case "price-asc":  return a.price - b.price;
+        case "price-desc": return b.price - a.price;
+        case "stock-desc": return b.stockQuantity - a.stockQuantity;
+        default:           return 0;
+      }
+    });
+
+    return list;
+  }, [search, category, sort]);
+
+  const toggleCart = (id) =>
+    setCartIds((prev) => {
+      const next = new Set(prev);
+      next.has(id) ? next.delete(id) : next.add(id);
+      return next;
+    });
+
+  const toggleExpand = (id) =>
+    setExpandedId((prev) => (prev === id ? null : id));
+
+  //  Render 
+  return (
+    <div className="ch-page">
+      {/* ── Top bar ── */}
+      <div className="ch-topbar">
+        <div className="ch-topbar-left">
+          <div>
+            <h1 className="ch-page-title">Parts Catalogue</h1>
+            <p className="ch-page-subtitle">
+              {filtered.length} part{filtered.length !== 1 ? "s" : ""} available
+            </p>
+          </div>
+        </div>
+
+        <div className="ch-topbar-right">
+          {/* Search */}
+          <div className="ch-search-wrap">
+            <Search size={14} className="ch-search-icon" />
+            <input
+              className="ch-search"
+              type="text"
+              placeholder="Search parts…"
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+            />
+          </div>
+
+          {/* Cart pill */}
+          <button className="ch-cart-btn" type="button">
+            <ShoppingCart size={15} />
+            {cartIds.size > 0 && (
+              <span className="ch-cart-count">{cartIds.size}</span>
+            )}
+          </button>
+        </div>
+      </div>
+
+      {/* ── Toolbar ── */}
+      <div className="ch-toolbar">
+        {/* Category tabs */}
+        <div className="ch-cats">
+          {CATEGORIES.map((cat) => (
+            <button
+              key={cat}
+              type="button"
+              className={`ch-cat-tab${category === cat ? " ch-cat-tab--active" : ""}`}
+              onClick={() => setCategory(cat)}
+            >
+              {cat}
+            </button>
+          ))}
+        </div>
+
+        <div className="ch-toolbar-right">
+          {/* Sort */}
+          <div className="ch-select-wrap">
+            <select
+              className="ch-select"
+              value={sort}
+              onChange={(e) => setSort(e.target.value)}
+            >
+              {SORT_OPTIONS.map((o) => (
+                <option key={o.value} value={o.value}>
+                  {o.label}
+                </option>
+              ))}
+            </select>
+          </div>
+
+          {/* View toggle */}
+          <div className="ch-view-toggle">
+            <button
+              type="button"
+              className={`ch-view-btn${view === "grid" ? " ch-view-btn--active" : ""}`}
+              onClick={() => setView("grid")}
+              title="Grid view"
+            >
+              <LayoutGrid size={15} />
+            </button>
+            <button
+              type="button"
+              className={`ch-view-btn${view === "list" ? " ch-view-btn--active" : ""}`}
+              onClick={() => setView("list")}
+              title="List view"
+            >
+              <LayoutList size={15} />
+            </button>
+          </div>
+        </div>
+      </div>
+
+      {/*  Empty state  */}
+      {filtered.length === 0 && (
+        <div className="ch-empty">
+          <Package size={40} className="ch-empty-icon" />
+          <p className="ch-empty-text">No parts match your search.</p>
+          <button
+            className="ch-btn ch-btn--ghost"
+            type="button"
+            onClick={() => { setSearch(""); setCategory("All"); }}
+          >
+            Clear filters
+          </button>
+        </div>
+      )}
+
+      {/* Grid View */}
+      {view === "grid" && filtered.length > 0 && (
+        <div className="ch-grid">
+          {filtered.map((part) => {
+            const stock   = stockLabel(part.stockQuantity);
+            const inCart  = cartIds.has(part.id);
+            const isOpen  = expandedId === part.id;
+
+            return (
+              <div key={part.id} className={`ch-card${isOpen ? " ch-card--open" : ""}`}>
+                {/* Category chip */}
+                <div className="ch-card-top">
+                  <span className="ch-chip">
+                    <Tag size={10} />
+                    {part.category}
+                  </span>
+                  <span className={stock.cls}>{stock.text}</span>
+                </div>
+
+                <h3 className="ch-card-name">{part.name}</h3>
+
+                {/* Description expand/collapse */}
+                <div className={`ch-card-desc-wrap${isOpen ? " ch-card-desc-wrap--open" : ""}`}>
+                  <p className="ch-card-desc">{part.description}</p>
+                </div>
+                <button
+                  type="button"
+                  className="ch-expand-btn"
+                  onClick={() => toggleExpand(part.id)}
+                >
+                  {isOpen ? (
+                    <><ChevronUp size={12} /> Less</>
+                  ) : (
+                    <><ChevronDown size={12} /> More</>
+                  )}
+                </button>
+
+                <div className="ch-card-footer">
+                  <span className="ch-price">{fmtPrice(part.price)}</span>
+                  <button
+                    type="button"
+                    className={`ch-btn${inCart ? " ch-btn--remove" : " ch-btn--add"}`}
+                    disabled={part.stockQuantity === 0}
+                    onClick={() => toggleCart(part.id)}
+                  >
+                    <ShoppingCart size={13} />
+                    {inCart ? "Remove" : "Add"}
+                  </button>
+                </div>
+
+                {part.stockQuantity <= 10 && part.stockQuantity > 0 && (
+                  <div className="ch-low-banner">
+                    <AlertCircle size={12} /> Only {part.stockQuantity} left — order soon
+                  </div>
+                )}
+              </div>
+            );
+          })}
+        </div>
+      )}
+
+      {/* List View */}
+      {view === "list" && filtered.length > 0 && (
+        <div className="ch-list-card">
+          <div className="ch-table-wrap">
+            <table className="ch-table">
+              <thead>
+                <tr>
+                  <th>Part Name</th>
+                  <th>Category</th>
+                  <th>Description</th>
+                  <th className="ch-th-right">Price</th>
+                  <th className="ch-th-center">Stock</th>
+                  <th className="ch-th-center">Action</th>
+                </tr>
+              </thead>
+
+              <tbody>
+                {filtered.map((part) => {
+                  const stock  = stockLabel(part.stockQuantity);
+                  const inCart = cartIds.has(part.id);
+                  return (
+                    <tr key={part.id} className="ch-row">
+                      <td className="ch-td-name">{part.name}</td>
+                      <td>
+                        <span className="ch-chip">
+                          <Tag size={10} />
+                          {part.category}
+                        </span>
+                      </td>
+                      <td className="ch-td-desc">{part.description || "—"}</td>
+                      <td className="ch-td-right ch-price">{fmtPrice(part.price)}</td>
+                      <td className="ch-td-center">
+                        <span className={stock.cls}>{stock.text}</span>
+                      </td>
+                      <td className="ch-td-center">
+                        <button
+                          type="button"
+                          className={`ch-btn ch-btn--sm${inCart ? " ch-btn--remove" : " ch-btn--add"}`}
+                          disabled={part.stockQuantity === 0}
+                          onClick={() => toggleCart(part.id)}
+                        >
+                          <ShoppingCart size={12} />
+                          {inCart ? "Remove" : "Add"}
+                        </button>
+                      </td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}

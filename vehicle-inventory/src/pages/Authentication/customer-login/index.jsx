@@ -45,7 +45,7 @@ export default function Login() {
     try {
       await loginCustomer(payload);
       setStatus(null);
-      navigate("/user-management"); // redirect after login
+      navigate("/home"); // redirect after login
     } catch (err) {
       setServerError(err.message || "Invalid credentials. Please try again.");
       setStatus("error");

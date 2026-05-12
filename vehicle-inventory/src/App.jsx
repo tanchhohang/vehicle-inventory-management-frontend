@@ -9,6 +9,7 @@ import Parts from './pages/Parts'
 import Sales from './pages/Sales'
 import VendorPage from './pages/Vendor/VendorPage'
 import UserManagement from './pages/UserManagement'
+import Home from './pages/Home'
 import Navbar from './common-components/NavBar'
 
 function App() {
@@ -30,6 +31,7 @@ function App() {
       <Route path="/sales" element={<Sales />} />
       <Route path="/vendors" element={<VendorPage />} />
       <Route path="/user-management" element={<UserManagement />} />
+      <Route path="/home" element={<Home />} />
     </Routes>
     </>
   )

@@ -25,6 +25,9 @@ const Navbar = () => {
       </div>
 
       <div style={{ display: "flex", gap: "24px", alignItems: "center" }}>
+
+        <Link to="/home" style={linkStyle}>Home</Link>
+
         <Link to="/user-management" style={linkStyle}>User Management</Link>
 
         {/* Operations Dropdown */}
@@ -63,7 +66,7 @@ const Navbar = () => {
           )}
         </div>
 
-        <Link to="/vendor" style={linkStyle}>Vendor</Link>
+        <Link to="/vendors" style={linkStyle}>Vendor</Link>
 
         <LogOut size={20} color="#fff" style={{ cursor: "pointer" }} onClick={() => navigate("/login")} />
       </div>

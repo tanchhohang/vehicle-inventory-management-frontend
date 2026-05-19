@@ -47,6 +47,8 @@ const Navbar = () => {
               <Link to="/customer-reports" style={dropdownLinkStyle}>Customer Reports</Link>
               <Link to="/purchase-history" style={dropdownLinkStyle}>Purchase History</Link>
               <Link to="/part-requests" style={dropdownLinkStyle}>Part Requests</Link>
+              <Link to="/notifications" style={dropdownLinkStyle}>Notifications</Link>
+              <Link to="/financial-reports" style={dropdownLinkStyle}>Financial Reports</Link>
             </div>
           )}
         </div>
@@ -64,6 +66,7 @@ const Navbar = () => {
             <div style={dropdownMenu}>
               <Link to="/parts" style={dropdownLinkStyle}>Parts</Link>
               <Link to="/sales" style={dropdownLinkStyle}>Sales</Link>
+              <Link to="/email-invoices" style={dropdownLinkStyle}>Email Invoices</Link>
             </div>
           )}
         </div>

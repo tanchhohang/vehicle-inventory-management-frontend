@@ -515,3 +515,23 @@
     grid-template-columns: 1fr;
   }
 }
+
+.ch-error-banner {
+    background: #fdf2f4;
+    border: 1px solid #d4a0ac;
+    border-radius: 8px;
+    padding: 12px 16px;
+    font-size: 13.5px;
+    color: #8b1e3f;
+    margin-bottom: 20px;
+}
+
+.ch-loading {
+    background: #f0f4f8;
+    border: 1px solid #c0d0e0;
+    border-radius: 8px;
+    padding: 12px 16px;
+    font-size: 13.5px;
+    color: #002b51;
+    margin-bottom: 20px;
+}

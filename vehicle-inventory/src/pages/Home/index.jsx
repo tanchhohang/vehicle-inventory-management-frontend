@@ -11,6 +11,7 @@ import {
   LayoutList,
 } from "lucide-react";
 import "./index.css";
+import CartModal from "./PartsModal/index.jsx";
 
 //  Helpers
 
@@ -48,6 +49,7 @@ export default function CustomerHome() {
   const [categories, setCategories] = useState(["All"]);
   const [loading, setLoading] = useState(true);
   const [fetchError, setFetchError] = useState("");
+  const [cartOpen, setCartOpen] = useState(false);
 
     const loadParts = useCallback(async () => {
         setLoading(true);
@@ -105,6 +107,45 @@ export default function CustomerHome() {
   const toggleExpand = (id) =>
     setExpandedId((prev) => (prev === id ? null : id));
 
+  const cartItems = allParts.filter(p => cartIds.has(p.id));
+  const cartTotal = cartItems.reduce((sum, p) => sum + p.price, 0);
+
+  const clearCart = () => setCartIds(new Set());
+
+  const handleCheckout = async (cartItems) => {
+    const token = localStorage.getItem("token");
+    const payload = JSON.parse(atob(token.split(".")[1]));
+
+    // ASP.NET Identity's standard claim for user ID
+    const customerId = Number(
+      payload["http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier"]
+    );
+
+    if (!customerId) throw new Error("Could not determine user ID. Please log in again.");
+
+    const res = await fetch("http://localhost:5047/api/sales", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": `Bearer ${token}`,
+      },
+      body: JSON.stringify({
+        customerId,
+        items: cartItems.map(p => ({
+          partId: p.id,
+          quantity: 1,
+        })),
+      }),
+    });
+
+    if (!res.ok) {
+      const msg = await res.text();
+      throw new Error(msg || "Checkout failed.");
+    }
+
+    clearCart();
+  };
+
   //  Render 
   return (
     <div className="ch-page">
@@ -133,7 +174,7 @@ export default function CustomerHome() {
           </div>
 
           {/* Cart pill */}
-          <button className="ch-cart-btn" type="button">
+          <button className="ch-cart-btn" type="button" onClick={() => setCartOpen(true)}>
             <ShoppingCart size={15} />
             {cartIds.size > 0 && (
               <span className="ch-cart-count">{cartIds.size}</span>
@@ -327,6 +368,15 @@ export default function CustomerHome() {
             </table>
           </div>
         </div>
+      )}
+      {/* Cart Drawer */}
+      {cartOpen && (
+        <CartModal
+          cartItems={cartItems}
+          onClose={() => setCartOpen(false)}
+          onRemove={toggleCart}
+          onCheckout={handleCheckout}
+        />
       )}
     </div>
   );

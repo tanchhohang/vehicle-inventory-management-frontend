@@ -43,7 +43,7 @@ export default function CustomerHome() {
   const [category, setCategory]     = useState("All");
   const [sort, setSort]             = useState("name-asc");
   const [view, setView]             = useState("grid"); // "grid" | "list"
-  const [cartIds, setCartIds]       = useState(new Set());
+  const [cartItems, setCartItems] = useState([]);
   const [expandedId, setExpandedId] = useState(null);
   const [allParts, setAllParts] = useState([]);
   const [categories, setCategories] = useState(["All"]);
@@ -97,20 +97,26 @@ export default function CustomerHome() {
     return list;
   }, [search, category, sort]);
 
-  const toggleCart = (id) =>
-    setCartIds((prev) => {
-      const next = new Set(prev);
-      next.has(id) ? next.delete(id) : next.add(id);
-      return next;
+  const addToCart = (part) => {
+    setCartItems(prev => [...prev, part]);
+  };
+
+  const removeFromCart = (id) => {
+    setCartItems(prev => {
+      const idx = prev.findLastIndex(p => p.id === id);
+
+      if (idx === -1) return prev;
+
+      return prev.filter((_, i) => i !== idx);
     });
+  };
 
   const toggleExpand = (id) =>
     setExpandedId((prev) => (prev === id ? null : id));
 
-  const cartItems = allParts.filter(p => cartIds.has(p.id));
   const cartTotal = cartItems.reduce((sum, p) => sum + p.price, 0);
 
-  const clearCart = () => setCartIds(new Set());
+  const clearCart = () => setCartItems([]);
 
   const handleCheckout = async (cartItems) => {
     const token = localStorage.getItem("token");
@@ -176,8 +182,8 @@ export default function CustomerHome() {
           {/* Cart pill */}
           <button className="ch-cart-btn" type="button" onClick={() => setCartOpen(true)}>
             <ShoppingCart size={15} />
-            {cartIds.size > 0 && (
-              <span className="ch-cart-count">{cartIds.size}</span>
+            {cartItems.length > 0 && (
+              <span className="ch-cart-count">{cartItems.length}</span>
             )}
           </button>
         </div>
@@ -260,7 +266,7 @@ export default function CustomerHome() {
         <div className="ch-grid">
           {filtered.map((part) => {
             const stock   = stockLabel(part.stockQuantity);
-            const inCart  = cartIds.has(part.id);
+            const inCart = cartItems.some(p => p.id === part.id);
             const isOpen  = expandedId === part.id;
 
             return (
@@ -298,7 +304,9 @@ export default function CustomerHome() {
                     type="button"
                     className={`ch-btn${inCart ? " ch-btn--remove" : " ch-btn--add"}`}
                     disabled={part.stockQuantity === 0}
-                    onClick={() => toggleCart(part.id)}
+                    onClick={() =>
+                      inCart ? removeFromCart(part.id) : addToCart(part)
+                    }
                   >
                     <ShoppingCart size={13} />
                     {inCart ? "Remove" : "Add"}
@@ -335,7 +343,7 @@ export default function CustomerHome() {
               <tbody>
                 {filtered.map((part) => {
                   const stock  = stockLabel(part.stockQuantity);
-                  const inCart = cartIds.has(part.id);
+                  const inCart = cartItems.some(p => p.id === part.id);
                   return (
                     <tr key={part.id} className="ch-row">
                       <td className="ch-td-name">{part.name}</td>
@@ -355,7 +363,9 @@ export default function CustomerHome() {
                           type="button"
                           className={`ch-btn ch-btn--sm${inCart ? " ch-btn--remove" : " ch-btn--add"}`}
                           disabled={part.stockQuantity === 0}
-                          onClick={() => toggleCart(part.id)}
+                          onClick={() =>
+                            inCart ? removeFromCart(part.id) : addToCart(part)
+                          }
                         >
                           <ShoppingCart size={12} />
                           {inCart ? "Remove" : "Add"}
@@ -374,7 +384,8 @@ export default function CustomerHome() {
         <CartModal
           cartItems={cartItems}
           onClose={() => setCartOpen(false)}
-          onRemove={toggleCart}
+          onRemove={removeFromCart}
+          onAdd={addToCart}
           onCheckout={handleCheckout}
         />
       )}

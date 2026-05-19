@@ -10,6 +10,7 @@ import {
 } from "lucide-react";
 import "./index.css";
 import AddUserModal from "./AddUserModal";
+import UserDetailPage from "../UserDetail";
 
 //  Role config
 const ROLES = ["Customer", "Admin", "Staff"];
@@ -53,6 +54,7 @@ export default function UserManagement() {
   const [deletingId, setDeletingId] = useState(null);
   const [updatingRoleId, setUpdatingRoleId] = useState(null);
   const [openRoleDropdown, setOpenRoleDropdown] = useState(null);
+  const [selectedUserId, setSelectedUserId] = useState(null);
 
   const loadUsers = useCallback(async () => {
     setLoading(true);
@@ -117,6 +119,15 @@ export default function UserManagement() {
       u.role?.toLowerCase().includes(q)
     );
   });
+
+  if (selectedUserId) {
+    return (
+      <UserDetailPage
+        userId={selectedUserId}
+        onBack={() => setSelectedUserId(null)}
+      />
+    );
+  }
 
   return (
     <div className="um-page">
@@ -212,7 +223,13 @@ export default function UserManagement() {
               ) : (
                 filtered.map((user) => (
                   <tr key={user.id} className="um-row">
-                    <td className="um-username">{user.userName || "—"}</td>
+                    <td
+                      className="um-username"
+                      style={{ cursor: "pointer" }}
+                      onClick={() => setSelectedUserId(user.id)}
+                    >
+                      {user.userName || "—"}
+                    </td>
                     <td>{user.firstName || "—"}</td>
                     <td>{user.lastName || "—"}</td>
                     <td className="um-email">{user.email || "—"}</td>

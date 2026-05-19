@@ -17,6 +17,7 @@ import FinancialReports from './pages/FinancialReports'
 import Navbar from './common-components/NavBar'
 import PurchaseHistory from './pages/PurchaseHistory'
 import Profile from './pages/Profile'
+import UserDetailPage from './pages/UserDetail'
 
 function App() {
   const location = useLocation();
@@ -44,6 +45,7 @@ function App() {
       <Route path="/email-invoices" element={<EmailInvoices />} />
       <Route path="/financial-reports" element={<FinancialReports />} />
       <Route path="/profile" element={<Profile />} />
+      <Route path="/user-detail" element={<UserDetailPage />} />
     </Routes>
     </>
   )

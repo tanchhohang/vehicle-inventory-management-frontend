@@ -12,6 +12,7 @@ import UserManagement from './pages/UserManagement'
 import PartRequests from './pages/PartRequests'
 import Home from './pages/Home'
 import Navbar from './common-components/NavBar'
+import PurchaseHistory from './pages/PurchaseHistory'
 import Profile from './pages/Profile'
 
 function App() {
@@ -29,6 +30,7 @@ function App() {
       <Route path="/reviews" element={<Reviews />} />
       <Route path="/purchase-invoices" element={<PurchaseInvoices />} />
       <Route path="/customer-reports" element={<CustomerReports />} />
+      <Route path="/purchase-history" element={<PurchaseHistory />} />
       <Route path="/part-requests" element={<PartRequests />} />
       <Route path="/parts" element={<Parts />} />
       <Route path="/sales" element={<Sales />} />

@@ -1,80 +1,50 @@
-// VendorPage.jsx
-// I made this page to manage vendors (suppliers who give us vehicle parts)
-// This page lets admin: see all vendors, add new ones, edit and delete them
-// I also added a search bar so you can find vendors quickly
-//
-// Author: Sneha Agrawal
-// Date: April 2026
 
 import { useState } from "react";
+import { Search, Plus, Pencil, Trash2, Store } from "lucide-react";
 import "./VendorPage.css";
 
-// I added two vendors by default just so the page doesnt look empty at first
-const initialVendors = [
-    { id: 1, name: "Speedy Parts Co.", email: "speedy@parts.com", phone: "9800000001", address: "Kathmandu, Nepal" },
-    { id: 2, name: "Auto World Suppliers", email: "autoworld@supply.com", phone: "9800000002", address: "Lalitpur, Nepal" },
-];
+// i added two vendors by default so the page doesnt look empty at first
+const initialVendors = [];
 
-function VendorPage() {
+export default function VendorPage() {
 
-    // this holds the list of all vendors
+    // list of all vendors
     const [vendors, setVendors] = useState(initialVendors);
 
-    // this controls if the add/edit form is open or closed
+    // controls whether the add/edit form is visible
     const [showForm, setShowForm] = useState(false);
 
-    // this remembers which vendor i am editing
-    // if its null it means i am adding a new vendor
+    // stores which vendor is being edited (null means adding new)
     const [editingVendor, setEditingVendor] = useState(null);
 
-    // this stores whatever the user types in the search box
-    const [searchQuery, setSearchQuery] = useState("");
+    // stores what user types in search box
+    const [search, setSearch] = useState("");
 
-    // this stores what the user types in the form fields
-    const [form, setForm] = useState({
-        name: "",
-        email: "",
-        phone: "",
-        address: ""
-    });
+    // stores form field values
+    const [form, setForm] = useState({ name: "", email: "", phone: "", address: "" });
 
-    // this stores error messages if the user fills the form wrong
+    // stores validation error messages
     const [errors, setErrors] = useState({});
 
-    // I wrote this function to check if the form is filled correctly
-    // it checks each field and returns errors if something is wrong
+    // checks if all form fields are filled correctly before saving
     const validate = () => {
         const newErrors = {};
-
-        if (!form.name.trim())
-            newErrors.name = "Vendor name is required.";
-
-        if (!form.email.trim())
-            newErrors.email = "Email is required.";
-        else if (!/\S+@\S+\.\S+/.test(form.email))
-            newErrors.email = "Invalid email format.";
-
-        // phone must be exactly 10 digits
-        if (!form.phone.trim())
-            newErrors.phone = "Phone number is required.";
-        else if (!/^\d{10}$/.test(form.phone))
-            newErrors.phone = "Phone must be 10 digits.";
-
-        if (!form.address.trim())
-            newErrors.address = "Address is required.";
-
+        if (!form.name.trim()) newErrors.name = "Vendor name is required.";
+        if (!form.email.trim()) newErrors.email = "Email is required.";
+        else if (!/\S+@\S+\.\S+/.test(form.email)) newErrors.email = "Invalid email format.";
+        if (!form.phone.trim()) newErrors.phone = "Phone number is required.";
+        else if (!/^\d{10}$/.test(form.phone)) newErrors.phone = "Phone must be 10 digits.";
+        if (!form.address.trim()) newErrors.address = "Address is required.";
         return newErrors;
     };
 
-    // whenever user types in a field, i update the form state
-    // i also clear the error for that field so it doesnt stay red
+    // updates form state when user types in any field
     const handleChange = (e) => {
         setForm({ ...form, [e.target.name]: e.target.value });
         setErrors({ ...errors, [e.target.name]: "" });
     };
 
-    // this runs when user clicks the Add Vendor button
-    // i clear the form and open it fresh
+    // opens form for adding a new vendor
     const handleAddNew = () => {
         setEditingVendor(null);
         setForm({ name: "", email: "", phone: "", address: "" });
@@ -82,181 +52,175 @@ function VendorPage() {
         setShowForm(true);
     };
 
-    // this runs when user clicks Edit on a vendor
-    // i fill the form with that vendors existing data
+    // opens form with existing vendor data for editing
     const handleEdit = (vendor) => {
         setEditingVendor(vendor);
-        setForm({
-            name: vendor.name,
-            email: vendor.email,
-            phone: vendor.phone,
-            address: vendor.address
-        });
+        setForm({ name: vendor.name, email: vendor.email, phone: vendor.phone, address: vendor.address });
         setErrors({});
         setShowForm(true);
     };
 
-    // this runs when user clicks Save Vendor or Update Vendor
-    // first i validate, then either update or add the vendor
+    // saves the vendor - either adds new or updates existing
     const handleSave = () => {
         const validationErrors = validate();
-
-        // if there are errors, show them and dont save
         if (Object.keys(validationErrors).length > 0) {
             setErrors(validationErrors);
             return;
         }
 
         if (editingVendor) {
-            // if we are editing, replace the old vendor with new data
-            setVendors(vendors.map((v) =>
-                v.id === editingVendor.id ? { ...v, ...form } : v
-            ));
+            // update existing vendor
+            setVendors(vendors.map((v) => v.id === editingVendor.id ? { ...v, ...form } : v));
         } else {
-            // if we are adding, create a new vendor with a unique id
-            // i used Date.now() to generate a unique id automatically
-            const newVendor = { id: Date.now(), ...form };
-            setVendors([...vendors, newVendor]);
+            // add new vendor with unique id using timestamp
+            setVendors([...vendors, { id: Date.now(), ...form }]);
         }
 
-        // close the form and clear everything after saving
         setShowForm(false);
         setForm({ name: "", email: "", phone: "", address: "" });
         setEditingVendor(null);
     };
 
-    // this runs when user clicks Delete
-    // i added a confirm popup so user doesnt delete by accident
+    // deletes a vendor after confirmation
     const handleDelete = (id) => {
         if (window.confirm("Are you sure you want to delete this vendor?")) {
             setVendors(vendors.filter((v) => v.id !== id));
         }
     };
 
-    // this filters the vendor list based on what user typed in search
-    // it checks name, email and phone number
-    const filteredVendors = vendors.filter((v) =>
-        v.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        v.email.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        v.phone.includes(searchQuery)
-    );
+    // filters vendors based on search query
+    const filtered = vendors.filter((v) => {
+        const q = search.toLowerCase();
+        return (
+            v.name.toLowerCase().includes(q) ||
+            v.email.toLowerCase().includes(q) ||
+            v.phone.includes(q) ||
+            v.address.toLowerCase().includes(q)
+        );
+    });
 
     return (
-        <div className="vendor-container">
-            <div className="vendor-inner">
+        <div className="vp-page">
 
-                {/* header section with page title and add button */}
-                <div className="vendor-header">
-                    <div className="vendor-header-left">
-                        <h1>Vendor Management</h1>
-                        <p>Manage all your vehicle parts suppliers</p>
+            {/* page header with title and action buttons */}
+            <div className="vp-page-header">
+                <div>
+                    <h1 className="vp-page-title">Vendor Management</h1>
+                    <p className="vp-page-subtitle">
+                        {vendors.length} vendor{vendors.length !== 1 ? "s" : ""} registered
+                    </p>
+                </div>
+
+                <div className="vp-header-actions">
+                    {/* search bar */}
+                    <div className="vp-search-wrap">
+                        <Search size={14} className="vp-search-icon" />
+                        <input
+                            className="vp-search"
+                            type="text"
+                            placeholder="Search vendors..."
+                            value={search}
+                            onChange={(e) => setSearch(e.target.value)}
+                        />
                     </div>
-                    <button className="btn-primary" onClick={handleAddNew}>
-                        + Add Vendor
+
+                    {/* add vendor button */}
+                    <button className="vp-btn vp-btn--primary" onClick={handleAddNew} type="button">
+                        <Plus size={15} />
+                        Add Vendor
                     </button>
                 </div>
+            </div>
 
-                {/* i added these stat cards to show total vendors and search results count */}
-                <div className="vendor-stats">
-                    <div className="stat-card">
-                        <h3>{vendors.length}</h3>
-                        <p>Total Vendors</p>
-                    </div>
-                    <div className="stat-card">
-                        <h3>{filteredVendors.length}</h3>
-                        <p>Showing Results</p>
-                    </div>
+            {/* stats cards showing total and filtered count */}
+            <div className="vp-stats">
+                <div className="vp-stat-card">
+                    <h3>{vendors.length}</h3>
+                    <p>Total Vendors</p>
                 </div>
-
-                {/* search bar - filters vendors as user types */}
-                <div className="vendor-search">
-                    <input
-                        type="text"
-                        placeholder="Search vendors by name, email or phone..."
-                        value={searchQuery}
-                        onChange={(e) => setSearchQuery(e.target.value)}
-                        className="search-input"
-                    />
+                <div className="vp-stat-card">
+                    <h3>{filtered.length}</h3>
+                    <p>Showing Results</p>
                 </div>
+            </div>
 
-                {/* this form only shows up when user clicks Add Vendor or Edit */}
-                {showForm && (
-                    <div className="vendor-form-card">
-                        <h2>{editingVendor ? "Edit Vendor" : "Add New Vendor"}</h2>
+            {/* add or edit form - only shows when showForm is true */}
+            {showForm && (
+                <div className="vp-form-card">
+                    <h2>{editingVendor ? "Edit Vendor" : "Add New Vendor"}</h2>
 
-                        {/* i used a 2 column grid layout for the form fields */}
-                        <div className="form-grid">
+                    <div className="vp-form-grid">
 
-                            {/* vendor name field */}
-                            <div className="form-group">
-                                <label>Vendor Name</label>
-                                <input
-                                    type="text"
-                                    name="name"
-                                    value={form.name}
-                                    onChange={handleChange}
-                                    placeholder="Enter vendor name"
-                                />
-                                {/* show error message if name is empty */}
-                                {errors.name && <span className="error">{errors.name}</span>}
-                            </div>
-
-                            {/* email field */}
-                            <div className="form-group">
-                                <label>Email Address</label>
-                                <input
-                                    type="email"
-                                    name="email"
-                                    value={form.email}
-                                    onChange={handleChange}
-                                    placeholder="Enter email address"
-                                />
-                                {errors.email && <span className="error">{errors.email}</span>}
-                            </div>
-
-                            {/* phone field - must be 10 digits */}
-                            <div className="form-group">
-                                <label>Phone Number</label>
-                                <input
-                                    type="text"
-                                    name="phone"
-                                    value={form.phone}
-                                    onChange={handleChange}
-                                    placeholder="Enter 10-digit phone number"
-                                />
-                                {errors.phone && <span className="error">{errors.phone}</span>}
-                            </div>
-
-                            {/* address field */}
-                            <div className="form-group">
-                                <label>Address</label>
-                                <input
-                                    type="text"
-                                    name="address"
-                                    value={form.address}
-                                    onChange={handleChange}
-                                    placeholder="Enter address"
-                                />
-                                {errors.address && <span className="error">{errors.address}</span>}
-                            </div>
-
+                        {/* vendor name field */}
+                        <div className="vp-form-group">
+                            <label>Vendor Name</label>
+                            <input
+                                type="text"
+                                name="name"
+                                value={form.name}
+                                onChange={handleChange}
+                                placeholder="Enter vendor name"
+                            />
+                            {errors.name && <span className="vp-error">{errors.name}</span>}
                         </div>
 
-                        {/* cancel closes the form, save adds or updates the vendor */}
-                        <div className="form-actions">
-                            <button className="btn-secondary" onClick={() => setShowForm(false)}>
-                                Cancel
-                            </button>
-                            <button className="btn-primary" onClick={handleSave}>
-                                {editingVendor ? "Update Vendor" : "Save Vendor"}
-                            </button>
+                        {/* email field */}
+                        <div className="vp-form-group">
+                            <label>Email Address</label>
+                            <input
+                                type="email"
+                                name="email"
+                                value={form.email}
+                                onChange={handleChange}
+                                placeholder="Enter email address"
+                            />
+                            {errors.email && <span className="vp-error">{errors.email}</span>}
                         </div>
-                    </div>
-                )}
 
-                {/* table that shows all vendors */}
-                <div className="vendor-table-card">
-                    <table className="vendor-table">
+                        {/* phone field */}
+                        <div className="vp-form-group">
+                            <label>Phone Number</label>
+                            <input
+                                type="text"
+                                name="phone"
+                                value={form.phone}
+                                onChange={handleChange}
+                                placeholder="Enter 10 digit phone number"
+                            />
+                            {errors.phone && <span className="vp-error">{errors.phone}</span>}
+                        </div>
+
+                        {/* address field */}
+                        <div className="vp-form-group">
+                            <label>Address</label>
+                            <input
+                                type="text"
+                                name="address"
+                                value={form.address}
+                                onChange={handleChange}
+                                placeholder="Enter address"
+                            />
+                            {errors.address && <span className="vp-error">{errors.address}</span>}
+                        </div>
+
+                    </div>
+
+                    {/* form buttons */}
+                    <div className="vp-form-actions">
+                        <button className="vp-btn vp-btn--secondary" onClick={() => setShowForm(false)} type="button">
+                            Cancel
+                        </button>
+                        <button className="vp-btn vp-btn--primary" onClick={handleSave} type="button">
+                            {editingVendor ? "Update Vendor" : "Save Vendor"}
+                        </button>
+                    </div>
+                </div>
+            )}
+
+            {/* vendor table */}
+            <div className="vp-card">
+                <div className="vp-table-wrap">
+                    <table className="vp-table">
                         <thead>
                             <tr>
                                 <th>#</th>
@@ -268,30 +232,44 @@ function VendorPage() {
                             </tr>
                         </thead>
                         <tbody>
-                            {/* if no vendors found after search, show this message */}
-                            {filteredVendors.length === 0 ? (
+                            {/* show empty state if no vendors found */}
+                            {filtered.length === 0 ? (
                                 <tr>
-                                    <td colSpan="6" className="no-data">
-                                        No vendors found.
+                                    <td colSpan={6} className="vp-state-cell">
+                                        <Store size={32} className="vp-empty-icon" />
+                                        <span className="vp-state-text">
+                                            {search ? "No vendors match your search." : "No vendors found."}
+                                        </span>
                                     </td>
                                 </tr>
                             ) : (
-                                // loop through all vendors and show each as a row
-                                filteredVendors.map((vendor, index) => (
+                                // loop through filtered vendors and show each as a row
+                                filtered.map((vendor, index) => (
                                     <tr key={vendor.id}>
                                         <td>{index + 1}</td>
-                                        <td>{vendor.name}</td>
-                                        <td>{vendor.email}</td>
+                                        <td className="vp-vendor-name">{vendor.name}</td>
+                                        <td className="vp-email">{vendor.email}</td>
                                         <td>{vendor.phone}</td>
                                         <td>{vendor.address}</td>
                                         <td>
-                                            {/* edit button opens the form with this vendors data */}
-                                            <button className="btn-edit" onClick={() => handleEdit(vendor)}>
-                                                Edit
+                                            {/* edit button opens form with vendor data */}
+                                            <button
+                                                className="vp-action-btn vp-action-btn--edit"
+                                                onClick={() => handleEdit(vendor)}
+                                                title="Edit vendor"
+                                                type="button"
+                                            >
+                                                <Pencil size={14} />
                                             </button>
-                                            {/* delete button removes this vendor */}
-                                            <button className="btn-delete" onClick={() => handleDelete(vendor.id)}>
-                                                Delete
+
+                                            {/* delete button removes vendor */}
+                                            <button
+                                                className="vp-action-btn vp-action-btn--delete"
+                                                onClick={() => handleDelete(vendor.id)}
+                                                title="Delete vendor"
+                                                type="button"
+                                            >
+                                                <Trash2 size={14} />
                                             </button>
                                         </td>
                                     </tr>
@@ -299,14 +277,14 @@ function VendorPage() {
                             )}
                         </tbody>
                     </table>
-
-                    {/* shows count at the bottom of the table */}
-                    <p className="vendor-count">Total Vendors: {filteredVendors.length}</p>
                 </div>
 
-            </div> {/* end of vendor-inner */}
-        </div>   // end of vendor-container
+                {/* total count at bottom of table */}
+                <div className="vp-table-footer">
+                    Total Vendors: {filtered.length}
+                </div>
+            </div>
+
+        </div>
     );
 }
-
-export default VendorPage;

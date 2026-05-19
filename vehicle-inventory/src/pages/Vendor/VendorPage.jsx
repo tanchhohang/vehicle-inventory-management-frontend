@@ -4,10 +4,7 @@ import { Search, Plus, Pencil, Trash2, Store } from "lucide-react";
 import "./VendorPage.css";
 
 // i added two vendors by default so the page doesnt look empty at first
-const initialVendors = [
-    { id: 1, name: "Speedy Parts Co.", email: "speedy@parts.com", phone: "9800000001", address: "Kathmandu, Nepal" },
-    { id: 2, name: "Auto World Suppliers", email: "autoworld@supply.com", phone: "9800000002", address: "Lalitpur, Nepal" },
-];
+const initialVendors = [];
 
 export default function VendorPage() {
 

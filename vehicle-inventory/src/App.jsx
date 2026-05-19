@@ -11,7 +11,6 @@ import VendorPage from './pages/Vendor/VendorPage'
 import UserManagement from './pages/UserManagement'
 import Home from './pages/Home'
 import Navbar from './common-components/NavBar'
-import SearchCustomers from './pages/SearchCustomers'
 import PurchaseHistory from './pages/PurchaseHistory'
 
 function App() {
@@ -33,7 +32,6 @@ function App() {
       <Route path="/parts" element={<Parts />} />
       <Route path="/sales" element={<Sales />} />
       <Route path="/vendors" element={<VendorPage />} />
-      <Route path="/search-customers" element={<SearchCustomers />} />
       <Route path="/user-management" element={<UserManagement />} />
       <Route path="/home" element={<Home />} />
     </Routes>

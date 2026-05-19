@@ -4,58 +4,7 @@ import { Search, History } from "lucide-react";
 import "./index.css";
 
 // dummy purchase history data so the page doesnt look empty
-const mockHistory = [
-    {
-        id: 1,
-        customerName: "Ram Sharma",
-        vehicleNumber: "BA 1 CHA 1234",
-        type: "Purchase",
-        description: "Bought brake pads and engine oil filter",
-        amount: 2500,
-        date: "2026-04-10",
-        status: "Completed"
-    },
-    {
-        id: 2,
-        customerName: "Sita Thapa",
-        vehicleNumber: "BA 2 PA 5678",
-        type: "Service",
-        description: "Full vehicle servicing and wheel alignment",
-        amount: 5000,
-        date: "2026-04-15",
-        status: "Completed"
-    },
-    {
-        id: 3,
-        customerName: "Hari Karki",
-        vehicleNumber: "BA 3 KHA 9012",
-        type: "Purchase",
-        description: "Bought headlights and wiper blades",
-        amount: 1800,
-        date: "2026-04-20",
-        status: "Completed"
-    },
-    {
-        id: 4,
-        customerName: "Gita Basnet",
-        vehicleNumber: "BA 1 JA 3456",
-        type: "Service",
-        description: "Oil change and battery replacement",
-        amount: 3200,
-        date: "2026-05-01",
-        status: "Completed"
-    },
-    {
-        id: 5,
-        customerName: "Bikash Rai",
-        vehicleNumber: "BA 2 CHA 7890",
-        type: "Purchase",
-        description: "Bought tyres and spare parts",
-        amount: 12000,
-        date: "2026-05-05",
-        status: "Completed"
-    },
-];
+const mockHistory = [];
 
 export default function PurchaseHistory() {
 

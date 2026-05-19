@@ -1,0 +1,213 @@
+@import url('https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700&display=swap');
+
+/* Tab bar */
+.fr-tabs {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+  margin-bottom: 20px;
+}
+
+.fr-tab {
+  height: 38px;
+  padding: 0 16px;
+  border-radius: 8px;
+  font-family: 'Manrope', sans-serif;
+  font-size: 13.5px;
+  font-weight: 600;
+  cursor: pointer;
+  border: 1.5px solid var(--color-border, #dcdcdc);
+  background: var(--color-surface, #fff);
+  color: var(--color-text-muted, #5a5a5a);
+  transition: background 0.15s, border-color 0.15s, color 0.15s;
+  white-space: nowrap;
+}
+
+.fr-tab--active {
+  background: var(--color-primary, #002b51);
+  border-color: var(--color-primary, #002b51);
+  color: #fff;
+}
+
+.fr-tab:not(.fr-tab--active):hover {
+  border-color: var(--color-primary, #002b51);
+  color: var(--color-primary, #002b51);
+}
+
+/* Filter row */
+.fr-filters {
+  display: flex;
+  align-items: flex-end;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin-bottom: 20px;
+}
+
+.fr-field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.fr-label {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--color-text-muted, #5a5a5a);
+  font-family: 'Manrope', sans-serif;
+}
+
+.fr-input {
+  height: 38px;
+  padding: 0 12px;
+  background: var(--color-surface, #fff);
+  border: 1.5px solid var(--color-border, #dcdcdc);
+  border-radius: 8px;
+  font-family: 'Manrope', sans-serif;
+  font-size: 13.5px;
+  color: var(--color-text, #0f0f0f);
+  outline: none;
+  transition: border-color 0.15s;
+  width: 160px;
+}
+
+.fr-input:focus {
+  border-color: var(--color-primary, #002b51);
+}
+
+/* Period badge */
+.fr-period-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 4px 12px;
+  border-radius: 20px;
+  background: #EAF0F8;
+  color: var(--color-primary, #002b51);
+  font-size: 12px;
+  font-weight: 700;
+  font-family: 'Manrope', sans-serif;
+  margin-bottom: 20px;
+}
+
+/* Stats grid */
+.fr-stats-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 14px;
+  margin-bottom: 20px;
+}
+
+.fr-stat-card {
+  background: var(--color-surface, #fff);
+  border: 1.5px solid var(--color-border, #dcdcdc);
+  border-radius: 10px;
+  padding: 18px 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.fr-stat-label {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--color-text-muted, #5a5a5a);
+  font-family: 'Manrope', sans-serif;
+}
+
+.fr-stat-value {
+  font-size: 22px;
+  font-weight: 700;
+  color: var(--color-primary, #002b51);
+  font-family: 'Manrope', sans-serif;
+  letter-spacing: -0.5px;
+}
+
+.fr-stat-value--profit {
+  color: #166534;
+}
+
+.fr-stat-value--loss {
+  color: var(--color-secondary, #8b1e3f);
+}
+
+.fr-stat-value--expense {
+  color: #92400e;
+}
+
+/* Breakdown table */
+.fr-breakdown-card {
+  background: var(--color-surface, #fff);
+  border: 1.5px solid var(--color-border, #dcdcdc);
+  border-radius: 10px;
+  overflow: hidden;
+}
+
+.fr-breakdown-header {
+  padding: 14px 18px;
+  border-bottom: 1.5px solid var(--color-border, #dcdcdc);
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--color-text, #0f0f0f);
+  font-family: 'Manrope', sans-serif;
+}
+
+.fr-breakdown-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-family: 'Manrope', sans-serif;
+  font-size: 13.5px;
+}
+
+.fr-breakdown-table tr {
+  border-bottom: 1px solid var(--color-border, #dcdcdc);
+}
+
+.fr-breakdown-table tr:last-child {
+  border-bottom: none;
+}
+
+.fr-breakdown-table td {
+  padding: 13px 18px;
+  color: var(--color-text, #0f0f0f);
+  vertical-align: middle;
+}
+
+.fr-breakdown-table td:last-child {
+  text-align: right;
+  font-weight: 600;
+}
+
+.fr-row-label {
+  color: var(--color-text-muted, #5a5a5a);
+  font-size: 13px;
+}
+
+/* Loading state */
+.fr-loading-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 14px;
+  padding: 60px 20px;
+  font-size: 13.5px;
+  color: var(--color-text-muted, #5a5a5a);
+  font-family: 'Manrope', sans-serif;
+}
+
+@media (max-width: 768px) {
+  .fr-stats-grid {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .fr-filters {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .fr-input {
+    width: 100%;
+  }
+}

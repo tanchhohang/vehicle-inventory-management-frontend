@@ -769,3 +769,49 @@
 .cm-btn--primary:hover:not(:disabled) {
   opacity: 0.88;
 }
+
+.cm-qty-control {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: var(--surface-2, #f3f4f6);
+  border-radius: 6px;
+  padding: 2px 4px;
+}
+
+.cm-qty-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 22px;
+  height: 22px;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  border-radius: 4px;
+  color: inherit;
+}
+
+.cm-qty-btn:hover {
+  background: var(--surface-3, #e5e7eb);
+}
+
+.cm-qty-value {
+  min-width: 18px;
+  text-align: center;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.cm-item-unit-price {
+  font-size: 11px;
+  color: var(--text-muted, #9ca3af);
+  margin-top: 2px;
+}
+
+.cm-error {
+  color: red;
+  font-size: 13px;
+  padding: 0 24px 8px;
+  margin: 0;
+}

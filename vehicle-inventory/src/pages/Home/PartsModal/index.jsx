@@ -1,5 +1,5 @@
-import { X, Trash2, Package, ShoppingCart, Tag } from "lucide-react";
-import { useState } from "react";
+import { X, Trash2, Package, ShoppingCart, Plus, Minus } from "lucide-react";
+import { useState, useMemo } from "react";
 
 function fmtPrice(price) {
   return new Intl.NumberFormat("en-US", {
@@ -9,11 +9,24 @@ function fmtPrice(price) {
   }).format(price);
 }
 
-export default function CartModal({ cartItems, onClose, onRemove, onCheckout }) {
+export default function CartModal({ cartItems, onClose, onRemove, onAdd, onCheckout }) {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
+  const grouped = useMemo(() => {
+    const map = {};
+    for (const item of cartItems) {
+      if (map[item.id]) {
+        map[item.id].qty += 1;
+      } else {
+        map[item.id] = { item, qty: 1 };
+      }
+    }
+    return Object.values(map);
+  }, [cartItems]);
+
   const total = cartItems.reduce((sum, p) => sum + p.price, 0);
+  const totalItems = cartItems.length;
 
   const handleCheckout = async () => {
     setLoading(true);
@@ -41,7 +54,7 @@ export default function CartModal({ cartItems, onClose, onRemove, onCheckout }) 
           <div>
             <h2 className="cm-title">Your Cart</h2>
             <p className="cm-subtitle">
-              {cartItems.length} item{cartItems.length !== 1 ? "s" : ""} in your cart
+              {totalItems} item{totalItems !== 1 ? "s" : ""} in your cart
             </p>
           </div>
           <button className="cm-close" onClick={onClose} type="button" aria-label="Close">
@@ -51,32 +64,40 @@ export default function CartModal({ cartItems, onClose, onRemove, onCheckout }) 
 
         {/* Body */}
         <div className="cm-body">
-          {cartItems.length === 0 ? (
+          {grouped.length === 0 ? (
             <div className="cm-empty">
               <Package size={38} className="cm-empty-icon" />
               <p className="cm-empty-text">Your cart is empty.</p>
             </div>
           ) : (
             <>
-              {cartItems.map((p) => (
-                <div key={p.id} className="cm-item">
+              {grouped.map(({ item, qty }) => (
+                <div key={item.id} className="cm-item">
                   <div className="cm-item-info">
-                    <span className="cm-item-name">{p.name}</span>
-                    {/* <span className="ch-chip">
-                      <Tag size={10} />
-                      {p.category}
-                    </span> */}
+                    <span className="cm-item-name">{item.name}</span>
+                    <span className="cm-item-unit-price">{fmtPrice(item.price)} each</span>
                   </div>
                   <div className="cm-item-right">
-                    <span className="cm-item-price">{fmtPrice(p.price)}</span>
-                    <button
-                      type="button"
-                      className="cm-remove-btn"
-                      onClick={() => onRemove(p.id)}
-                      title="Remove from cart"
-                    >
-                      <Trash2 size={13} />
-                    </button>
+                    <div className="cm-qty-control">
+                      <button
+                        type="button"
+                        className="cm-qty-btn"
+                        onClick={() => onRemove(item.id)}
+                        aria-label="Decrease quantity"
+                      >
+                        {qty === 1 ? <Trash2 size={12} /> : <Minus size={12} />}
+                      </button>
+                      <span className="cm-qty-value">{qty}</span>
+                      <button
+                        type="button"
+                        className="cm-qty-btn"
+                        onClick={() => onAdd(item)}
+                        aria-label="Increase quantity"
+                      >
+                        <Plus size={12} />
+                      </button>
+                    </div>
+                    <span className="cm-item-price">{fmtPrice(item.price * qty)}</span>
                   </div>
                 </div>
               ))}
@@ -90,6 +111,7 @@ export default function CartModal({ cartItems, onClose, onRemove, onCheckout }) 
         </div>
 
         {/* Footer */}
+        {error && <p className="cm-error">{error}</p>}
         <div className="cm-footer">
           <button className="cm-btn cm-btn--secondary" type="button" onClick={onClose}>
             Continue Shopping
@@ -97,15 +119,12 @@ export default function CartModal({ cartItems, onClose, onRemove, onCheckout }) 
           <button
             className="cm-btn cm-btn--primary"
             type="button"
-            disabled={cartItems.length === 0 || loading}
+            disabled={grouped.length === 0 || loading}
             onClick={handleCheckout}
           >
             <ShoppingCart size={14} />
             {loading ? "Processing…" : "Checkout"}
           </button>
-
-          {/* show error if any, above the footer: */}
-          {error && <p style={{ color: "red", fontSize: 13, padding: "0 24px" }}>{error}</p>}
         </div>
 
       </div>

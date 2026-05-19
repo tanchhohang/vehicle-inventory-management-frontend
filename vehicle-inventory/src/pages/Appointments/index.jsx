@@ -15,7 +15,26 @@ const normalizeAppointment = (appointment) => ({
   date: appointment.date ?? appointment.Date ?? '',
   time: appointment.time ?? appointment.Time ?? '',
   reason: appointment.reason ?? appointment.Reason ?? '',
+  status: appointment.status ?? appointment.Status ?? '',
 })
+
+const STATUS_BADGE_STYLES = {
+  pending: { background: '#FFF4E5', color: '#B45309' },
+  confirmed: { background: '#E6F4EA', color: '#1E7E34' },
+  cancelled: { background: '#FDECEA', color: '#C62828' },
+  canceled: { background: '#FDECEA', color: '#C62828' },
+}
+
+function StatusBadge({ status }) {
+  const label = status ? String(status) : '—'
+  const key = label.toLowerCase()
+  const style = STATUS_BADGE_STYLES[key] ?? { background: '#EFEFEF', color: '#444' }
+  return (
+    <span className="um-badge" style={style}>
+      {label}
+    </span>
+  )
+}
 
 function Appointments() {
   const [appointments, setAppointments] = useState([])
@@ -93,7 +112,8 @@ function Appointments() {
       item.customerName?.toLowerCase().includes(q) ||
       item.date?.toLowerCase().includes(q) ||
       item.time?.toLowerCase().includes(q) ||
-      item.reason?.toLowerCase().includes(q)
+      item.reason?.toLowerCase().includes(q) ||
+      item.status?.toLowerCase().includes(q)
     )
   })
 
@@ -146,20 +166,21 @@ function Appointments() {
                 <th>Date</th>
                 <th>Time</th>
                 <th>Reason</th>
+                <th>Status</th>
                 <th className="um-th-center">Actions</th>
               </tr>
             </thead>
             <tbody>
               {loading ? (
                 <tr>
-                  <td colSpan={5} className="um-state-cell">
+                  <td colSpan={6} className="um-state-cell">
                     <span className="um-table-spinner" />
                     <span className="um-state-text">Loading appointments…</span>
                   </td>
                 </tr>
               ) : filtered.length === 0 ? (
                 <tr>
-                  <td colSpan={5} className="um-state-cell">
+                  <td colSpan={6} className="um-state-cell">
                     <span className="um-state-text">
                       {search ? 'No appointments match your search.' : 'No appointments found.'}
                     </span>
@@ -172,6 +193,9 @@ function Appointments() {
                     <td>{appointment.date || '—'}</td>
                     <td>{appointment.time || '—'}</td>
                     <td>{appointment.reason || '—'}</td>
+                    <td>
+                      <StatusBadge status={appointment.status} />
+                    </td>
                     <td className="um-td-center">
                       <button type="button" className="um-action-btn um-action-btn--delete" onClick={() => handleCancel(appointment.id)} title="Cancel appointment">
                         <Trash2 size={14} />

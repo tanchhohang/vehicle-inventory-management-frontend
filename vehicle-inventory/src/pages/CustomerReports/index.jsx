@@ -10,7 +10,16 @@ const tabs = [
   { key: 'pending-credits', label: 'Pending Credits' },
 ]
 
+const COLUMN_LABELS = {
+  name: 'Customer Name',
+  total: 'Total Spent',
+  visits: 'Visit Count',
+  amount: 'Amount Owed',
+  days: 'Days Overdue',
+}
+
 function formatColumnLabel(key) {
+  if (COLUMN_LABELS[key]) return COLUMN_LABELS[key]
   return key.replace(/([A-Z])/g, ' $1').replace(/_/g, ' ').replace(/^./, (c) => c.toUpperCase()).trim()
 }
 

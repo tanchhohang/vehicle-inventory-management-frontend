@@ -1,8 +1,22 @@
 import { useEffect, useState } from 'react'
-import { Search } from 'lucide-react'
+import { Search, Trash2 } from 'lucide-react'
 import '../UserManagement/index.css'
 
 const API_BASE = 'http://localhost:5047/api/reviews'
+
+function normalizeReview(review) {
+  return {
+    id: review.id ?? review.Id ?? review.reviewId ?? review.ReviewId,
+    customerName: review.customerName ?? review.CustomerName ?? '',
+    rating: Number(review.rating ?? review.Rating ?? 0) || 0,
+    comment: review.comment ?? review.Comment ?? '',
+  }
+}
+
+function formatStarRating(rating) {
+  const count = Math.min(5, Math.max(0, Math.round(Number(rating) || 0)))
+  return '⭐'.repeat(count) || '—'
+}
 
 function Reviews() {
   const [reviews, setReviews] = useState([])
@@ -18,7 +32,7 @@ function Reviews() {
       const response = await fetch(API_BASE)
       if (!response.ok) throw new Error('Failed to fetch reviews')
       const data = await response.json()
-      setReviews(Array.isArray(data) ? data : [])
+      setReviews(Array.isArray(data) ? data.map(normalizeReview) : [])
     } catch (err) {
       setError(err.message || 'Something went wrong while loading reviews.')
     } finally {
@@ -49,6 +63,22 @@ function Reviews() {
       fetchReviews()
     } catch (err) {
       setError(err.message || 'Could not submit review.')
+    }
+  }
+
+  const handleDelete = async (id) => {
+    if (id == null || id === '') return
+    if (!window.confirm('Delete this review?')) return
+    setError('')
+    try {
+      const response = await fetch(`${API_BASE}/${encodeURIComponent(id)}`, {
+        method: 'DELETE',
+      })
+      if (!response.ok) throw new Error('Failed to delete review')
+      await fetchReviews()
+    } catch (err) {
+      console.error('Failed to delete review:', err)
+      setError(err.message || 'Could not delete review.')
     }
   }
 
@@ -106,19 +136,20 @@ function Reviews() {
                 <th>Customer Name</th>
                 <th>Rating</th>
                 <th>Comment</th>
+                <th className="um-th-center">Actions</th>
               </tr>
             </thead>
             <tbody>
               {loading ? (
                 <tr>
-                  <td colSpan={3} className="um-state-cell">
+                  <td colSpan={4} className="um-state-cell">
                     <span className="um-table-spinner" />
                     <span className="um-state-text">Loading reviews…</span>
                   </td>
                 </tr>
               ) : filtered.length === 0 ? (
                 <tr>
-                  <td colSpan={3} className="um-state-cell">
+                  <td colSpan={4} className="um-state-cell">
                     <span className="um-state-text">{search ? 'No reviews match your search.' : 'No reviews yet.'}</span>
                   </td>
                 </tr>
@@ -126,8 +157,18 @@ function Reviews() {
                 filtered.map((review) => (
                   <tr key={review.id} className="um-row">
                     <td className="um-username">{review.customerName || '—'}</td>
-                    <td>{review.rating} / 5</td>
+                    <td aria-label={`${review.rating} out of 5 stars`}>{formatStarRating(review.rating)}</td>
                     <td style={{ whiteSpace: 'normal' }}>{review.comment || '—'}</td>
+                    <td className="um-td-center">
+                      <button
+                        type="button"
+                        className="um-action-btn um-action-btn--delete"
+                        onClick={() => handleDelete(review.id)}
+                        title="Delete review"
+                      >
+                        <Trash2 size={14} />
+                      </button>
+                    </td>
                   </tr>
                 ))
               )}

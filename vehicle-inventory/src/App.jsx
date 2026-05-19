@@ -12,6 +12,7 @@ import UserManagement from './pages/UserManagement'
 import PartRequests from './pages/PartRequests'
 import Home from './pages/Home'
 import Navbar from './common-components/NavBar'
+import Profile from './pages/Profile'
 
 function App() {
   const location = useLocation();
@@ -34,6 +35,7 @@ function App() {
       <Route path="/vendors" element={<VendorPage />} />
       <Route path="/user-management" element={<UserManagement />} />
       <Route path="/home" element={<Home />} />
+      <Route path="/profile" element={<Profile />} />
     </Routes>
     </>
   )

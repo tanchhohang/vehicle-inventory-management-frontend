@@ -11,6 +11,9 @@ import VendorPage from './pages/Vendor/VendorPage'
 import UserManagement from './pages/UserManagement'
 import PartRequests from './pages/PartRequests'
 import Home from './pages/Home'
+import Notifications from './pages/Notifications'
+import EmailInvoices from './pages/EmailInvoices'
+import FinancialReports from './pages/FinancialReports'
 import Navbar from './common-components/NavBar'
 import PurchaseHistory from './pages/PurchaseHistory'
 import Profile from './pages/Profile'
@@ -37,6 +40,9 @@ function App() {
       <Route path="/vendors" element={<VendorPage />} />
       <Route path="/user-management" element={<UserManagement />} />
       <Route path="/home" element={<Home />} />
+      <Route path="/notifications" element={<Notifications />} />
+      <Route path="/email-invoices" element={<EmailInvoices />} />
+      <Route path="/financial-reports" element={<FinancialReports />} />
       <Route path="/profile" element={<Profile />} />
     </Routes>
     </>

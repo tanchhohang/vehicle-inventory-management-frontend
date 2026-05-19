@@ -1,0 +1,129 @@
+@import url('https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700&display=swap');
+
+.nm-actions-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
+.nm-action-card {
+  background: var(--color-surface, #fff);
+  border: 1.5px solid var(--color-border, #dcdcdc);
+  border-radius: 10px;
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.nm-icon-wrap {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  border-radius: 10px;
+  flex-shrink: 0;
+}
+
+.nm-icon-wrap--warning {
+  background: #fffbeb;
+  color: #92400e;
+}
+
+.nm-icon-wrap--info {
+  background: #EAF0F8;
+  color: var(--color-primary, #002b51);
+}
+
+.nm-action-title {
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--color-text, #0f0f0f);
+  margin: 0;
+}
+
+.nm-action-desc {
+  font-size: 13px;
+  color: var(--color-text-muted, #5a5a5a);
+  line-height: 1.55;
+  flex: 1;
+}
+
+.nm-action-footer {
+  display: flex;
+  align-items: center;
+  padding-top: 4px;
+}
+
+/* Activity Log */
+.nm-log-card {
+  background: var(--color-surface, #fff);
+  border: 1.5px solid var(--color-border, #dcdcdc);
+  border-radius: 10px;
+  overflow: hidden;
+}
+
+.nm-log-header {
+  padding: 14px 18px;
+  border-bottom: 1.5px solid var(--color-border, #dcdcdc);
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--color-text, #0f0f0f);
+}
+
+.nm-log-empty {
+  padding: 48px 20px;
+  text-align: center;
+  font-size: 13.5px;
+  color: var(--color-text-muted, #5a5a5a);
+}
+
+.nm-log-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 13px 18px;
+  border-bottom: 1px solid var(--color-border, #dcdcdc);
+}
+
+.nm-log-item:last-child {
+  border-bottom: none;
+}
+
+.nm-log-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  flex-shrink: 0;
+  margin-top: 5px;
+}
+
+.nm-log-dot--success {
+  background: #16a34a;
+}
+
+.nm-log-dot--error {
+  background: var(--color-secondary, #8b1e3f);
+}
+
+.nm-log-msg {
+  flex: 1;
+  font-size: 13.5px;
+  color: var(--color-text, #0f0f0f);
+  line-height: 1.45;
+}
+
+.nm-log-time {
+  font-size: 11.5px;
+  color: var(--color-text-muted, #5a5a5a);
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+@media (max-width: 768px) {
+  .nm-actions-grid {
+    grid-template-columns: 1fr;
+  }
+}

@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
-import { ChevronDown, LogOut} from "lucide-react";
+import { ChevronDown, LogOut, User} from "lucide-react";
 import wheelsImg from "../../assets/white-wheels.png";
 import { useNavigate } from "react-router-dom";
 
@@ -69,6 +69,7 @@ const Navbar = () => {
 
         <Link to="/vendors" style={linkStyle}>Vendor</Link>
 
+        <User size={20} color="#fff" style={{ cursor: "pointer" }} onClick={() => navigate("/profile")} />
         <LogOut size={20} color="#fff" style={{ cursor: "pointer" }} onClick={() => navigate("/login")} />
       </div>
     </nav>

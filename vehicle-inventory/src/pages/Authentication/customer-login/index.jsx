@@ -43,9 +43,16 @@ export default function Login() {
     };
 
     try {
-      await loginCustomer(payload);
+      const data = await loginCustomer(payload);
+      
+      // Save token and user info
+      localStorage.setItem("token", data.token);
+      localStorage.setItem("userId", data.id.toString());
+      localStorage.setItem("role", data.role);
+      localStorage.setItem("username", data.username);
+
       setStatus(null);
-      navigate("/home"); // redirect after login
+      navigate("/home");
     } catch (err) {
       setServerError(err.message || "Invalid credentials. Please try again.");
       setStatus("error");

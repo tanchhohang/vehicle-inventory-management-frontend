@@ -1,4 +1,4 @@
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect, useCallback } from "react";
 import {
   Search,
   ShoppingCart,
@@ -10,7 +10,6 @@ import {
   LayoutGrid,
   LayoutList,
 } from "lucide-react";
-import { MOCK_PARTS, CATEGORIES } from "./mockParts";
 import "./index.css";
 
 //  Helpers
@@ -45,11 +44,34 @@ export default function CustomerHome() {
   const [view, setView]             = useState("grid"); // "grid" | "list"
   const [cartIds, setCartIds]       = useState(new Set());
   const [expandedId, setExpandedId] = useState(null);
+  const [allParts, setAllParts] = useState([]);
+  const [categories, setCategories] = useState(["All"]);
+  const [loading, setLoading] = useState(true);
+  const [fetchError, setFetchError] = useState("");
 
-  //  Filter & sort 
+    const loadParts = useCallback(async () => {
+        setLoading(true);
+        setFetchError("");
+        try {
+            const res = await fetch("http://localhost:5047/api/Parts");
+            if (!res.ok) throw new Error("Failed to fetch parts.");
+            const data = await res.json();
+            setAllParts(data);
+            const cats = ["All", ...new Set(data.map(p => p.category).filter(Boolean))];
+            setCategories(cats);
+        } catch (err) {
+            setFetchError(err.message);
+        } finally {
+            setLoading(false);
+        }
+    }, []);
+
+    useEffect(() => { loadParts(); }, [loadParts]);
+  
+    //  Filter & sort 
   const filtered = useMemo(() => {
     const q = search.trim().toLowerCase();
-    let list = MOCK_PARTS.filter((p) => {
+    let list = allParts.filter((p) => {
       const matchCat = category === "All" || p.category === category;
       const matchQ =
         !q ||
@@ -120,11 +142,14 @@ export default function CustomerHome() {
         </div>
       </div>
 
-      {/* ── Toolbar ── */}
-      <div className="ch-toolbar">
+        {fetchError && <div className="ch-error-banner">{fetchError}</div>}
+        {loading && <div className="ch-loading">Loading parts…</div>}
+
+        {/* ── Toolbar ── */}
+        <div className="ch-toolbar">
         {/* Category tabs */}
         <div className="ch-cats">
-          {CATEGORIES.map((cat) => (
+            {categories.map((cat) => (
             <button
               key={cat}
               type="button"

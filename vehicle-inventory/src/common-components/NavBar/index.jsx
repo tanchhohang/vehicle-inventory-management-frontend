@@ -42,9 +42,11 @@ const Navbar = () => {
           {openDropdown === "operations" && (
             <div style={dropdownMenu}>
               <Link to="/appointments" style={dropdownLinkStyle}>Appointments</Link>
+              <Link to="/search-customers" style={dropdownLinkStyle}>Search Customers</Link>
               <Link to="/reviews" style={dropdownLinkStyle}>Reviews</Link>
               <Link to="/purchase-invoices" style={dropdownLinkStyle}>Purchase Invoices</Link>
               <Link to="/customer-reports" style={dropdownLinkStyle}>Customer Reports</Link>
+              <Link to="/purchase-history" style={dropdownLinkStyle}>Purchase History</Link>
             </div>
           )}
         </div>

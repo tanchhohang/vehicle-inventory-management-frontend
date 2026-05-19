@@ -1,23 +1,27 @@
 import { useEffect, useState } from 'react'
+import { Search, Trash2 } from 'lucide-react'
+import '../UserManagement/index.css'
 
 const API_BASE = 'http://localhost:5047/api/appointments'
 
-const styles = {
-  page: { maxWidth: 800, margin: '0 auto', padding: 20, fontFamily: 'Arial, sans-serif' },
-  section: { marginBottom: 24, padding: 16, border: '1px solid #ddd', borderRadius: 8 },
-  row: { display: 'flex', gap: 10, marginBottom: 10, flexWrap: 'wrap' },
-  input: { padding: 8, border: '1px solid #ccc', borderRadius: 6, flex: 1, minWidth: 180 },
-  button: { padding: '8px 12px', border: '1px solid #999', borderRadius: 6, cursor: 'pointer' },
-  dangerButton: { padding: '8px 12px', border: '1px solid #b33', color: '#b33', borderRadius: 6, cursor: 'pointer', background: '#fff' },
-  card: { border: '1px solid #eee', borderRadius: 8, padding: 12, marginBottom: 10, background: '#fafafa' },
-  muted: { color: '#666' },
-  error: { color: '#b00020' },
-}
+const normalizeAppointment = (appointment) => ({
+  id:
+    appointment.id ??
+    appointment.Id ??
+    appointment.appointmentId ??
+    appointment.AppointmentId,
+  customerName:
+    appointment.customerName ?? appointment.CustomerName ?? '',
+  date: appointment.date ?? appointment.Date ?? '',
+  time: appointment.time ?? appointment.Time ?? '',
+  reason: appointment.reason ?? appointment.Reason ?? '',
+})
 
 function Appointments() {
   const [appointments, setAppointments] = useState([])
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
+  const [search, setSearch] = useState('')
   const [form, setForm] = useState({
     customerName: '',
     date: '',
@@ -30,12 +34,11 @@ function Appointments() {
     setError('')
     try {
       const response = await fetch(API_BASE)
-      if (!response.ok) {
-        throw new Error('Failed to fetch appointments')
-      }
+      if (!response.ok) throw new Error('Failed to fetch appointments')
       const data = await response.json()
-      setAppointments(Array.isArray(data) ? data : [])
+      setAppointments(Array.isArray(data) ? data.map(normalizeAppointment) : [])
     } catch (err) {
+      console.error('Failed to fetch appointments:', err)
       setError(err.message || 'Something went wrong while loading appointments.')
     } finally {
       setLoading(false)
@@ -60,9 +63,7 @@ function Appointments() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(form),
       })
-      if (!response.ok) {
-        throw new Error('Failed to book appointment')
-      }
+      if (!response.ok) throw new Error('Failed to book appointment')
       setForm({ customerName: '', date: '', time: '', reason: '' })
       fetchAppointments()
     } catch (err) {
@@ -71,72 +72,118 @@ function Appointments() {
   }
 
   const handleCancel = async (id) => {
+    if (id == null || id === '') return
+    if (!window.confirm('Cancel this appointment?')) return
     setError('')
     try {
-      const response = await fetch(`${API_BASE}/${id}`, { method: 'DELETE' })
-      if (!response.ok) {
-        throw new Error('Failed to cancel appointment')
-      }
-      setAppointments((prev) => prev.filter((item) => item.id !== id))
+      const response = await fetch(`${API_BASE}/${encodeURIComponent(id)}`, {
+        method: 'DELETE',
+      })
+      if (!response.ok) throw new Error('Failed to cancel appointment')
+      await fetchAppointments()
     } catch (err) {
+      console.error('Failed to cancel appointment:', err)
       setError(err.message || 'Could not cancel appointment.')
     }
   }
 
-  return (
-    <div style={styles.page}>
-      <h1>Appointments</h1>
+  const filtered = appointments.filter((item) => {
+    const q = search.toLowerCase()
+    return (
+      item.customerName?.toLowerCase().includes(q) ||
+      item.date?.toLowerCase().includes(q) ||
+      item.time?.toLowerCase().includes(q) ||
+      item.reason?.toLowerCase().includes(q)
+    )
+  })
 
-      <section style={styles.section}>
-        <h2>Book New Appointment</h2>
-        <form onSubmit={handleSubmit}>
-          <div style={styles.row}>
-            <input
-              style={styles.input}
-              type="text"
-              name="customerName"
-              placeholder="Customer name"
-              value={form.customerName}
-              onChange={handleChange}
-              required
-            />
-            <input style={styles.input} type="date" name="date" value={form.date} onChange={handleChange} required />
-            <input style={styles.input} type="time" name="time" value={form.time} onChange={handleChange} required />
+  return (
+    <div className="um-page">
+      <div className="um-page-header">
+        <div className="um-page-title-group">
+          <div>
+            <h1 className="um-page-title">Appointments</h1>
+            <p className="um-page-subtitle">Book and manage service appointments</p>
           </div>
-          <div style={styles.row}>
+        </div>
+        <div className="um-header-actions">
+          <div className="um-search-wrap">
+            <Search size={14} className="um-search-icon" />
             <input
-              style={styles.input}
+              className="um-search"
               type="text"
-              name="reason"
-              placeholder="Reason"
-              value={form.reason}
-              onChange={handleChange}
-              required
+              placeholder="Search appointments…"
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
             />
-            <button style={styles.button} type="submit">
-              Book Appointment
-            </button>
+          </div>
+        </div>
+      </div>
+
+      {error && <div className="um-error-banner">{error}</div>}
+
+      <div className="um-card" style={{ marginBottom: 20, padding: 20 }}>
+        <h2 className="um-page-title" style={{ fontSize: 16, marginBottom: 16 }}>
+          Book New Appointment
+        </h2>
+        <form onSubmit={handleSubmit}>
+          <div className="um-header-actions" style={{ flexWrap: 'wrap' }}>
+            <input className="um-search" style={{ width: 180 }} type="text" name="customerName" placeholder="Customer name" value={form.customerName} onChange={handleChange} required />
+            <input className="um-search" style={{ width: 160 }} type="date" name="date" value={form.date} onChange={handleChange} required />
+            <input className="um-search" style={{ width: 140 }} type="time" name="time" value={form.time} onChange={handleChange} required />
+            <input className="um-search" style={{ width: 200 }} type="text" name="reason" placeholder="Reason for visit" value={form.reason} onChange={handleChange} required />
+            <button className="um-btn um-btn--primary" type="submit">Book Appointment</button>
           </div>
         </form>
-      </section>
+      </div>
 
-      <section style={styles.section}>
-        <h2>My Appointments</h2>
-        {loading && <p style={styles.muted}>Loading appointments...</p>}
-        {error && <p style={styles.error}>{error}</p>}
-        {!loading && appointments.length === 0 && <p style={styles.muted}>No appointments found.</p>}
-        {appointments.map((appointment) => (
-          <div key={appointment.id} style={styles.card}>
-            <p><strong>Name:</strong> {appointment.customerName}</p>
-            <p><strong>Date:</strong> {appointment.date}</p>
-            <p><strong>Time:</strong> {appointment.time}</p>
-            <p><strong>Reason:</strong> {appointment.reason}</p>
-            <button type="button" style={styles.dangerButton} onClick={() => handleCancel(appointment.id)}>
-              Cancel
-            </button>
-          </div>
-        ))}
-      </section>
+      <div className="um-card">
+        <div className="um-table-wrap">
+          <table className="um-table">
+            <thead>
+              <tr>
+                <th>Customer Name</th>
+                <th>Date</th>
+                <th>Time</th>
+                <th>Reason</th>
+                <th className="um-th-center">Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              {loading ? (
+                <tr>
+                  <td colSpan={5} className="um-state-cell">
+                    <span className="um-table-spinner" />
+                    <span className="um-state-text">Loading appointments…</span>
+                  </td>
+                </tr>
+              ) : filtered.length === 0 ? (
+                <tr>
+                  <td colSpan={5} className="um-state-cell">
+                    <span className="um-state-text">
+                      {search ? 'No appointments match your search.' : 'No appointments found.'}
+                    </span>
+                  </td>
+                </tr>
+              ) : (
+                filtered.map((appointment) => (
+                  <tr key={appointment.id} className="um-row">
+                    <td className="um-username">{appointment.customerName || '—'}</td>
+                    <td>{appointment.date || '—'}</td>
+                    <td>{appointment.time || '—'}</td>
+                    <td>{appointment.reason || '—'}</td>
+                    <td className="um-td-center">
+                      <button type="button" className="um-action-btn um-action-btn--delete" onClick={() => handleCancel(appointment.id)} title="Cancel appointment">
+                        <Trash2 size={14} />
+                      </button>
+                    </td>
+                  </tr>
+                ))
+              )}
+            </tbody>
+          </table>
+        </div>
+      </div>
     </div>
   )
 }

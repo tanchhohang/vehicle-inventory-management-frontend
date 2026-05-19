@@ -45,6 +45,7 @@ const Navbar = () => {
               <Link to="/reviews" style={dropdownLinkStyle}>Reviews</Link>
               <Link to="/purchase-invoices" style={dropdownLinkStyle}>Purchase Invoices</Link>
               <Link to="/customer-reports" style={dropdownLinkStyle}>Customer Reports</Link>
+              <Link to="/part-requests" style={dropdownLinkStyle}>Part Requests</Link>
             </div>
           )}
         </div>
